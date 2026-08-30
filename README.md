@@ -127,4 +127,4 @@ agent:
 ---
 
 ## 📄 License
-Distributed under the MIT License. Built for WeMakeDevs TrueForge Hackathon 2026.
+Distributed under the MIT License.
