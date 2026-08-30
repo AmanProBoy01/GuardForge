@@ -14,11 +14,8 @@ It continuously monitors software repositories for security vulnerabilities (CVE
 
 ---
 
-## 🎯 Hackathon Track Compliance
 
-| Track | Prize | How GuardForge AI Qualifies |
-| :--- | :--- | :--- |
-| 🏆 **Double-O Track** *(Best Use of TrueForge)* | **NVIDIA DGX Spark** | Utilizes TrueForge `agent.yaml` presets, Model Context Protocol (MCP) tool routing, automatic context token compaction (saving 43% tokens), dynamic Daytona code sandboxing, and Human-in-the-Loop safety pauses. |
+| Utilizes TrueForge `agent.yaml` presets, Model Context Protocol (MCP) tool routing, automatic context token compaction (saving 43% tokens), dynamic Daytona code sandboxing, and Human-in-the-Loop safety pauses. |
 | 🎨 **Savile Row Track** *(Best UI)* | **Apple iPad** *(for each team member)* | Features a state-of-the-art dark-mode dashboard (HTML/CSS/JS) with live tool execution cards, subagent status indicators, context efficiency metrics, and an interactive **Human Approval Modal**. |
 | 🛡️ **Q Branch Track** *(Best Code Quality)* | **Apple Mac Mini** | Developed following strict open-source practices using GitHub Pull Requests reviewed and audited by **Qodo Merge**. |
 | 💼 **Universal Exports** | **TrueFoundry Job Interviews** | End-to-end production architecture ready for deployment on TrueFoundry compute planes. |
