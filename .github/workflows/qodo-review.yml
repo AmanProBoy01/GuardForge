@@ -1,0 +1,20 @@
+name: Qodo Merge PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  qodo_review:
+    runs-on: ubuntu-latest
+    name: Qodo Automated PR Audit
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Qodo PR Review Action
+        uses: CoderCover/pr-agent@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          prs.auto_review: "true"
