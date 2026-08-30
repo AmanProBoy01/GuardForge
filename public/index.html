@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GuardForge | TrueForge Agent Harness</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Enterprise Header Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-logo">TF</div>
+      <span class="brand-name">GuardForge</span>
+      <span class="brand-version">v1.0 • TrueForge Harness</span>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" id="tabFeed" onclick="switchTab('feed')">Execution Feed</button>
+      <button class="tab-btn" id="tabTerminal" onclick="switchTab('terminal')">Terminal Stream</button>
+      <button class="tab-btn" id="tabAnalytics" onclick="switchTab('analytics')">📊 Analytics</button>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="btn" style="padding: 0.35rem 0.75rem; font-size: 0.75rem;" onclick="openConfigModal()">
+        ⚙️ Config & Provider
+      </button>
+      <div class="status-badge" id="statusBadge">
+        <span class="status-dot idle" id="statusDot"></span>
+        <span id="statusText">IDLE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Container -->
+  <div class="app-container">
+    
+    <!-- Left Sidebar: Quick Presets & Control -->
+    <aside class="sidebar-left">
+      <div>
+        <div class="sidebar-title">Quick Action Presets</div>
+        <div class="preset-list">
+          <button class="preset-item" onclick="setPreset('Scan repository for CVE vulnerabilities & generate patch.')">
+            🛡️ Scan & Fix CVE-2026-3104
+          </button>
+          <button class="preset-item" onclick="setPreset('Run full container test suite in Daytona sandbox.')">
+            🧪 Run Daytona Test Suite
+          </button>
+          <button class="preset-item" onclick="setPreset('Audit npm dependencies and open security Pull Request.')">
+            📦 Audit & Create PR
+          </button>
+          <button class="preset-item" onclick="setPreset('Merge Pull Request #42 into main branch.')">
+            🚀 Trigger Production Merge
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-title">Control Actions</div>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+          <button class="btn" style="width: 100%; justify-content: center;" onclick="clearLogs()">
+            🗑️ Clear Feed
+          </button>
+          <button class="btn" style="width: 100%; justify-content: center;" onclick="resetSession()">
+            🔄 Reset Session
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Center Content Area -->
+    <main class="main-content">
+      
+      <!-- Prompt Command Bar -->
+      <div class="prompt-bar-container">
+        <form class="prompt-form" onsubmit="event.preventDefault(); startAgentRun();">
+          <input type="text" id="promptInput" class="input-field" placeholder="Type a task prompt or select a preset..." value="Scan repository for security vulnerabilities and prepare patch.">
+          <button type="submit" id="runBtn" class="btn btn-primary">
+            ▶ Run Agent
+          </button>
+        </form>
+      </div>
+
+      <!-- Tab 1: Execution Feed -->
+      <div class="execution-feed" id="feedView">
+        <div class="feed-card">
+          <div class="card-icon-wrapper">🚀</div>
+          <div class="card-body">
+            <div class="card-title">
+              <span>GuardForge Agent Initialized</span>
+              <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">Session: tf-session-active</span>
+            </div>
+            <div class="card-text">
+              Connected to TrueForge Agent Harness runtime. Select a preset or type a custom prompt to execute autonomous tasks with Daytona sandboxing and Human-in-the-Loop safety checks.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Terminal Logs Stream -->
+      <div class="terminal-view hidden" id="terminalView">[00:00:00] [SYSTEM] GuardForge Agent Harness Runtime initialized.
+[00:00:00] [INFO] Loaded agent.yaml configuration.
+[00:00:00] [MCP] Connected mcp-github, mcp-security-scanner, mcp-sandbox.
+[00:00:00] [STATUS] System ready. Awaiting task stream...
+</div>
+
+      <!-- Tab 3: Analytics View -->
+      <div class="analytics-view hidden" id="analyticsView">
+        <div class="sidebar-title" style="margin-bottom: 1rem;">Harness Cost & Performance Analytics</div>
+        <div class="stat-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.5rem;">
+          <div class="stat-box">
+            <div class="stat-label">Total Execution Savings</div>
+            <div class="stat-value green">$14.20</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">vs Managed Runtimes</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Context Compaction Ratio</div>
+            <div class="stat-value blue">43%</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">50k Token Threshold</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">MCP Latency Overhead</div>
+            <div class="stat-value">18ms</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 0.2rem;">Stdio Transport</div>
+          </div>
+        </div>
+
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1.25rem;">
+          <h4 style="font-size: 0.9rem; margin-bottom: 0.8rem;">TrueForge Optimization Summary</h4>
+          <ul style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.8; padding-left: 1.2rem;">
+            <li><strong>Deferred Schema Loading:</strong> Saves ~35% token overhead by loading MCP tool schemas lazily.</li>
+            <li><strong>Output Offloading:</strong> Converts large build logs into off-context references.</li>
+            <li><strong>Human Safety Gatekeeper:</strong> Zero unapproved writes to GitHub main branch.</li>
+          </ul>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Right Sidebar: Context & Harness Metrics -->
+    <aside class="sidebar-right">
+      
+      <!-- Context & Token Metrics -->
+      <div class="section-block">
+        <div class="sidebar-title">Context Window & Tokens</div>
+        <div class="stat-grid">
+          <div class="stat-box">
+            <div class="stat-label">Used Tokens</div>
+            <div class="stat-value" id="usedTokens">14,250</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Compacted</div>
+            <div class="stat-value green" id="compactedTokens">8,100</div>
+          </div>
+        </div>
+        <div class="stat-box" style="margin-top: 0.2rem;">
+          <div class="stat-label">Token Savings</div>
+          <div class="stat-value blue" id="savingsPercent">43%</div>
+        </div>
+      </div>
+
+      <!-- Connected MCP Tools -->
+      <div class="section-block">
+        <div class="sidebar-title">Model Context Protocol (MCP)</div>
+        <div class="mcp-list">
+          <div class="mcp-item">
+            <span class="mcp-name">mcp-github</span>
+            <span class="mcp-status">CONNECTED</span>
+          </div>
+          <div class="mcp-item">
+            <span class="mcp-name">mcp-security-scanner</span>
+            <span class="mcp-status">CONNECTED</span>
+          </div>
+          <div class="mcp-item">
+            <span class="mcp-name">mcp-sandbox (Daytona)</span>
+            <span class="mcp-status">CONNECTED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subagents & Sandboxing -->
+      <div class="section-block">
+        <div class="sidebar-title">Isolated Subagents (Click to Inspect)</div>
+        <div class="mcp-list">
+          <div class="mcp-item" style="cursor: pointer;" onclick="openSubagentLogs('Scanner Subagent', '[INIT] Subagent initialized.\n[SCAN] Scanned package.json for CVE vulnerabilities.\n[REPORT] Found 1 High Severity issue.')">
+            <div>
+              <div class="mcp-name" style="font-size: 0.8rem;">Subagent-Scanner 🔍</div>
+              <div style="font-size: 0.7rem; color: var(--text-muted);" id="sub1Desc">Ready</div>
+            </div>
+            <span class="mcp-status" id="sub1Pill" style="color: var(--text-muted);">IDLE</span>
+          </div>
+          <div class="mcp-item" style="cursor: pointer;" onclick="openSubagentLogs('Daytona Sandbox', '[INIT] Container provisioned.\n[DOCKER] Isolated network attached.\n[TEST] Executed npm test -> 142 passed.')">
+            <div>
+              <div class="mcp-name" style="font-size: 0.8rem;">Daytona Sandbox 🧪</div>
+              <div style="font-size: 0.7rem; color: var(--text-muted);" id="sub2Desc">Container warm</div>
+            </div>
+            <span class="mcp-status" id="sub2Pill" style="color: var(--accent-green);">READY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hackathon Compliance Badge -->
+      <div class="section-block" style="margin-top: auto;">
+        <div class="stat-box" style="background: var(--bg-surface-hover);">
+          <div class="stat-label" style="color: var(--accent-green);">Qodo PR Audit Compliance</div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.4rem;">
+            PR review trail active via `.github/workflows/qodo-review.yml`.
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- Human-in-the-Loop Dialog Modal -->
+  <div class="modal-backdrop hidden" id="approvalModal">
+    <div class="dialog-box">
+      <div class="dialog-header">
+        <h3>TrueForge Safety Gatekeeper</h3>
+        <span class="alert-tag">ACTION PAUSED</span>
+      </div>
+
+      <div class="dialog-content">
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">
+          The agent is requesting permission to perform a non-reversible operation on the codebase:
+        </p>
+
+        <div class="dialog-meta">
+          <div class="meta-row">
+            <span class="meta-label">Action:</span>
+            <span class="meta-val" id="modalAction">github_merge_pr</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Target:</span>
+            <span class="meta-val" id="modalTarget">PR #42: Security Fix for CVE-2026-3104</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Risk Level:</span>
+            <span class="meta-val" style="color: var(--accent-amber);" id="modalRisk">HIGH</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Summary:</span>
+            <span class="meta-val" style="font-family: var(--font-sans);" id="modalSummary">Upgrades dependency to lodash@4.17.21 and merges patch into production.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dialog-actions">
+        <button class="btn btn-danger" onclick="sendApproval('REJECTED')">
+          Reject Action
+        </button>
+        <button class="btn btn-primary" onclick="sendApproval('APPROVED')">
+          Approve & Merge
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Config Inspector Modal -->
+  <div class="modal-backdrop hidden" id="configModal">
+    <div class="dialog-box">
+      <div class="dialog-header">
+        <h3>⚙️ TrueForge Agent Configuration</h3>
+        <span class="alert-tag" style="background: rgba(56, 189, 248, 0.15); color: var(--accent-primary); border-color: rgba(56, 189, 248, 0.3);">YAML SPEC</span>
+      </div>
+      <div class="dialog-content">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">Select LLM Provider (Vendor Neutral):</label>
+          <select id="providerSelect" class="input-field" style="width: 100%;" onchange="updateProviderConfig()">
+            <option value="openai">OpenAI (gpt-4o)</option>
+            <option value="anthropic">Anthropic (claude-3-5-sonnet)</option>
+            <option value="google">Google Gemini (gemini-1.5-pro)</option>
+            <option value="ollama">Local Model (llama3 / ollama)</option>
+          </select>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.775rem; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.8rem; color: #A5D6FF; max-height: 200px; overflow-y: auto;" id="configYamlDisplay">
+version: "1.0"
+agent:
+  name: "GuardForge AI"
+  provider: "openai"
+  model: "gpt-4o"
+  sandbox: "daytona"
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" onclick="closeConfigModal()">Close Spec</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subagent Log Inspector Modal -->
+  <div class="modal-backdrop hidden" id="subagentModal">
+    <div class="dialog-box">
+      <div class="dialog-header">
+        <h3 id="subagentModalTitle">Subagent Log Inspector</h3>
+        <span class="alert-tag" style="background: rgba(52, 211, 153, 0.15); color: var(--accent-green); border-color: rgba(52, 211, 153, 0.3);">SUBAGENT</span>
+      </div>
+      <div class="dialog-content">
+        <div style="font-family: var(--font-mono); font-size: 0.8rem; background: var(--bg-app); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 1rem; color: var(--text-primary); max-height: 250px; overflow-y: auto; white-space: pre-wrap;" id="subagentModalLogs">
+        </div>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn" onclick="closeSubagentModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
