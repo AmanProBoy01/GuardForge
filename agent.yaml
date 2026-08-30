@@ -1,0 +1,66 @@
+version: "1.0"
+harness: "trueforge"
+harness_package: "@truefoundry/trueforge"
+
+agent:
+  name: "GuardForge AI"
+  id: "guardforge-devops-security"
+  description: "Autonomous DevOps & Security Patching Agent built on TrueForge Agent Harness"
+
+  # LLM Provider Configuration (TrueForge Agnostic Specification)
+  model:
+    provider: "openai" # Supports openai, anthropic, google, ollama
+    name: "gpt-4o"
+    temperature: 0.1
+    max_tokens: 4096
+
+  # TrueForge Context Engineering & Token Management
+  context_window:
+    max_tokens: 128000
+    compaction_threshold: 40000
+    offload_large_payloads: true
+    deferred_schema_loading: true
+
+  # System Instructions
+  system_prompt: |
+    You are GuardForge AI, an autonomous DevOps and Code Security Agent built on TrueForge.
+    Your objective is to monitor codebases, identify security vulnerabilities (CVEs), run test suites inside isolated sandboxes, and create pull requests for fixes.
+    You MUST adhere strictly to safety rules:
+    - Never merge a pull request or deploy code without Human Approval.
+    - Output clear step-by-step reasoning.
+    - Delegate heavy tasks to worker subagents.
+
+  # Model Context Protocol (MCP) Tools Integration
+  mcp_servers:
+    - name: "mcp-github"
+      transport: "stdio"
+      capabilities:
+        - "github_read_repo"
+        - "github_create_branch"
+        - "github_open_pull_request"
+        - "github_merge_pr"
+
+    - name: "mcp-security-scanner"
+      transport: "stdio"
+      capabilities:
+        - "scan_cve_vulnerabilities"
+        - "audit_dependencies"
+
+    - name: "mcp-sandbox"
+      transport: "stdio"
+      capabilities:
+        - "run_container_sandbox"
+        - "execute_unit_tests"
+
+  # Dynamic Code Sandboxing
+  sandbox:
+    provider: "daytona"
+    timeout_seconds: 300
+    isolated_network: true
+
+  # Human-in-the-Loop (HITL) Safety Gate Rules
+  human_in_the_loop:
+    require_approval_for:
+      - "github_merge_pr"
+      - "execute_destructive_command"
+      - "trigger_production_deploy"
